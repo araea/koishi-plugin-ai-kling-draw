@@ -142,6 +142,20 @@ export function apply(ctx: Context, config: Config) {
   // ht* d*
   ctx.command('aiKling.绘图 <prompt:text>', '绘一张图')
     .action(async ({session}, prompt) => {
+      let imageUrl = '';
+      let base64 = '';
+      if (session.event.message.quote && session.event.message.quote.elements) {
+        imageUrl = getFirstImageUrl(session.event.message.quote.elements);
+      } else {
+        imageUrl = getFirstImageUrl(session.event.message.elements);
+      }
+      if (!imageUrl && (session.event.platform === 'onebot' || session.event.platform === 'red')) {
+        const headImgUrls = getHeadImgUrls(h.select(prompt, 'at'))
+        if (headImgUrls.length > 0) {
+          imageUrl = headImgUrls[0];
+        }
+      }
+
       prompt = `${h.select(prompt, 'text')}`;
 
       if (!prompt) {
@@ -179,23 +193,10 @@ export function apply(ctx: Context, config: Config) {
 1:1, 16:9, 4:3, 3:2, 2:3, 3:4, 9:16。`);
         return
       }
-      let imageUrl = '';
-      let base64 = '';
-      if (session.event.message.quote && session.event.message.quote.elements) {
-        imageUrl = getFirstImageUrl(session.event.message.quote.elements);
-      } else {
-        imageUrl = getFirstImageUrl(session.event.message.elements);
-      }
-      if (!imageUrl && (session.event.platform === 'onebot' || session.event.platform === 'red')) {
-        const headImgUrls = getHeadImgUrls(h.select(prompt, 'at'))
-        if (headImgUrls.length > 0) {
-          imageUrl = headImgUrls[0];
-        }
-      }
+
       if (imageUrl) {
         base64 = await getImageBase64(imageUrl);
       }
-
 
       const json = {
         "arguments": [
@@ -224,6 +225,7 @@ export function apply(ctx: Context, config: Config) {
         "inputs": []
       }
 
+
       if (base64) {
         json.arguments.push({
           "name": "fidelity",
@@ -251,7 +253,6 @@ export function apply(ctx: Context, config: Config) {
           if (config.printProgress) {
             logger.success(`Task ID: ${taskId} | Image URL: ${result.data.works[0].resource.resource}`);
           }
-          // const imageBase64 = await getImageBase64(result.data.works[0].resource.resource);
           await sendMessage(session, `${h.image(result.data.works[0].resource.resource)}`);
           return
         } else {
