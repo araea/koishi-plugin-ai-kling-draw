@@ -63,6 +63,12 @@ cookie: 'YOUR_COOKIE' // 替换为你的 AI Kling Draw Cookie
 | `aiKling.提示词生成器 <描述>` | 根据描述生成 AI 绘图提示词。 |
 | `aiKling.参数列表`        | 查看 可灵AI 参数列表。    |
 
+## 🌸 可灵AI绘图一览
+![image](https://github.com/user-attachments/assets/84249060-f98f-4b4b-8769-981ff3b0af5a)
+![image](https://github.com/user-attachments/assets/8e32ec9e-33cb-4d00-b107-b1670c8f0b8a)
+![image](https://github.com/user-attachments/assets/bbf23f08-4733-40ef-905c-e7fee3307ede)
+
+
 ## 🍧 致谢
 
 * [Koishi](https://koishi.chat/) - 💖 强大的机器人框架
