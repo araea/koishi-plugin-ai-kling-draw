@@ -251,8 +251,8 @@ export function apply(ctx: Context, config: Config) {
           if (config.printProgress) {
             logger.success(`Task ID: ${taskId} | Image URL: ${result.data.works[0].resource.resource}`);
           }
-          const imageBase64 = await getImageBase64(result.data.works[0].resource.resource);
-          await sendMessage(session, `${h.image(Buffer.from(imageBase64, 'base64'), 'image/png')}`);
+          // const imageBase64 = await getImageBase64(result.data.works[0].resource.resource);
+          await sendMessage(session, `${h.image(result.data.works[0].resource.resource)}`);
           return
         } else {
           if (config.printProgress) {
