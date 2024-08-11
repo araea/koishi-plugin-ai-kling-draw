@@ -253,7 +253,15 @@ export function apply(ctx: Context, config: Config) {
           if (config.printProgress) {
             logger.success(`Task ID: ${taskId} | Image URL: ${result.data.works[0].resource.resource}`);
           }
-          await sendMessage(session, `${h.image(result.data.works[0].resource.resource)}`);
+          try {
+            await sendMessage(session, `${h.image(result.data.works[0].resource.resource)}`);
+          } catch (error) {
+            logger.error(error);
+            await sendMessage(session, `图片发送失败。
+图片链接如下：
+${result.data.works[0].resource.resource}`);
+          }
+
           return
         } else {
           if (config.printProgress) {
@@ -422,7 +430,7 @@ export function apply(ctx: Context, config: Config) {
         const result = await fetchTaskResult(taskId);
         if (result.status !== 200 ||  result.data.status === 50) {
           logger.error(`Failed to fetch task result.`);
-          return {status: 'FAILURE', failReason: '任务失败。'};
+          return {status: 'FAILURE', message: '任务失败。'};
         }
         if (config.printProgress) {
           logger.info(`Task ID: ${taskId} | Status: ${result.data.status}`);
@@ -434,7 +442,7 @@ export function apply(ctx: Context, config: Config) {
       } catch (error) {
         if (error instanceof Error && error.message === `Polling timed out after ${timeoutDuration} minutes`) {
           logger.error(`Polling timed out after ${timeoutDuration} minutes`);
-          return {status: 'FAILURE', failReason: '任务超时。'};
+          return {status: 'FAILURE', message: '任务超时。'};
         }
         logger.error('Error fetching task result:', error);
       }
