@@ -425,7 +425,7 @@ export function apply(ctx: Context, config: Config) {
         if (config.printProgress) {
           logger.info(`Task ID: ${taskId} | Status: ${result.data.status}`);
         }
-        if (result.data.status === 99 || result.status === 50) {
+        if (result.data.status === 99 || result.data.status === 50) {
           return result;
         }
         await new Promise(resolve => setTimeout(resolve, 5000));
