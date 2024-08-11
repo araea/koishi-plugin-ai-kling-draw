@@ -1,6 +1,6 @@
 {
   "name": "koishi-plugin-ai-kling-draw",
-  "description": "",
+  "description": "快手[可灵AI](https://klingai.kuaishou.com/text-to-image/new)绘图模型，原生支持生成准确的图内汉字，每日登录大约能免费画 330 张。自带提示词生成器、垫图等功能。\uD83C\uDFA8",
   "version": "0.0.1",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
@@ -9,13 +9,25 @@
     "dist"
   ],
   "license": "MIT",
-  "scripts": {},
+  "author": "Nawyjx <3373167460@qq.com>",
+  "homepage": "https://www.npmjs.com/package/koishi-plugin-ai-kling-draw?activeTab=readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/araea/koishi-plugin-ai-kling-draw.git"
+  },
   "keywords": [
     "chatbot",
     "koishi",
-    "plugin"
+    "plugin",
+    "ai",
+    "kling",
+    "draw",
+    "绘图",
+    "klingdraw",
+    "可灵",
+    "可灵AI",
+    "可图"
   ],
-  "devDependencies": {},
   "peerDependencies": {
     "koishi": "^4.17.11"
   }
