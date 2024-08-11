@@ -100,43 +100,47 @@ export function apply(ctx: Context, config: Config) {
         await sendMessage(session, `缺少提示词。`);
         return
       }
-      const json = {
-        "task": "根据输入生成通用的AI绘图提示词",
-        "input": {
-          "描述": prompt,
-        },
-        "output": {
-          "format": "JSON",
-          "structure": {
-            "thinkStepByStep": [
-              "步骤一：分析用户的描述，提取关键词和核心概念",
-              "步骤二：根据风格和艺术家信息，确定艺术风格和参考",
-              "步骤三：结合其他细节，补充光线、颜色、情绪等描述",
-              "步骤四：将所有信息整合，生成最终的AI绘图提示词"
-            ],
-            "finalPrompt": "生成的AI绘图提示词"
-          }
-        },
-        "example": {
-          "input": {
-            "描述": "一只猫",
-          },
-          "output": {
-            "format": "JSON",
-            "structure": {
-              "thinkStepByStep": [
-                "步骤一：...",
-                "步骤二：...",
-                "步骤三：...",
-                "步骤四：..."
-              ],
-              "finalPrompt": "一只穿着宇航服的猫，站在月球上，背景是地球，卡通风格，迪士尼 --ar 16:9"
-            }
-          }
-        },
-        "note": "参数 --ar <1:1, 16:9, 4:3, 3:2, 2:3, 3:4, 或 9:16> 用于指定图片比例，例如 --ar 16:9"
-      };
-      const result = await fetchCompletions(JSON.stringify(json));
+   const promptSendToAI = `You are an AI assistant specialized in generating AI art prompts in Chinese. Your task is to create a detailed and creative prompt for AI image generation based on a given description. Think through this process step by step, and format your output strictly as JSON.
+
+Follow these steps:
+1. Analyze the user's description, extracting key words and core concepts.
+2. Determine the art style and references based on any style or artist information provided.
+3. Enhance the description by adding details about lighting, colors, mood, and other relevant elements.
+4. Integrate all the information to produce the final AI art prompt in Chinese.
+
+Your response MUST be in JSON format with the following structure:
+{
+"thinkStepByStep": [
+"Step 1: [Your analysis of the description]",
+"Step 2: [Your thoughts on style and artistic references]",
+"Step 3: [Your ideas for enhancing the description]",
+"Step 4: [Your process of combining all elements]"
+],
+"finalPrompt": "[Your generated AI art prompt in Chinese]"
+}
+
+Important notes:
+- The "finalPrompt" MUST be in Chinese.
+- Consider including an aspect ratio parameter (--ar) in your final prompt. Options include 1:1, 16:9, 4:3, 3:2, 2:3, 3:4, or 9:16.
+- Your entire output MUST be valid JSON. Do not include any text outside of the JSON structure.
+
+Example input: "一只猫" (A cat)
+Example output:
+{
+"thinkStepByStep": [
+"Step 1: The core concept is a cat. We need to make it more interesting and unique.",
+"Step 2: No specific style mentioned, so let's choose a popular and appealing style like cartoon or Disney.",
+"Step 3: To make it more captivating, let's place the cat in an unexpected setting with contrasting elements.",
+"Step 4: Combine all elements into a cohesive and visually striking prompt in Chinese."
+],
+"finalPrompt": "一只穿着宇航服的猫，站在月球上，背景是地球，卡通风格，迪士尼 --ar 16:9"
+}
+
+Now, please provide a description for which you'd like me to generate an AI art prompt. Remember, I will respond only with a JSON object containing the step-by-step thinking process and the final prompt in Chinese.
+
+input: ${prompt}
+output: `
+      const result = await fetchCompletions(promptSendToAI);
       await sendMessage(session, `${parseOutputResultToGetFinalPrompt(result)}`);
     })
   // ht* d*
