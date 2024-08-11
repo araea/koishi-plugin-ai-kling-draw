@@ -254,7 +254,12 @@ export function apply(ctx: Context, config: Config) {
             logger.success(`Task ID: ${taskId} | Image URL: ${result.data.works[0].resource.resource}`);
           }
           try {
-            await sendMessage(session, `${h.image(result.data.works[0].resource.resource)}`);
+            const messageId = await sendMessage(session, `${h.image(result.data.works[0].resource.resource)}`);
+            if (!messageId) {
+              await sendMessage(session, `图片发送失败。
+图片链接如下：
+${result.data.works[0].resource.resource}`);
+            }
           } catch (error) {
             logger.error(error);
             await sendMessage(session, `图片发送失败。
@@ -428,7 +433,7 @@ ${result.data.works[0].resource.resource}`);
         }
 
         const result = await fetchTaskResult(taskId);
-        if (result.status !== 200 ||  result.data.status === 50) {
+        if (result.status !== 200 || result.data.status === 50) {
           logger.error(`Failed to fetch task result.`);
           return {status: 'FAILURE', message: '任务失败。'};
         }
@@ -568,7 +573,13 @@ ${result.data.works[0].resource.resource}`);
   }
 
   async function sendMessage(session, text) {
-    const [messageId] = await session.send(`${h.quote(session.messageId)}${text}`)
-    return messageId
+    try {
+      const [messageId] = await session.send(`${h.quote(session.messageId)}${text}`)
+      return messageId
+    } catch (error) {
+      logger.error('Error sending message:', error);
+      throw error
+    }
+
   }
 }
