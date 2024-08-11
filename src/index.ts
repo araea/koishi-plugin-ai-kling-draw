@@ -420,14 +420,14 @@ export function apply(ctx: Context, config: Config) {
         }
 
         const result = await fetchTaskResult(taskId);
-        if (result.status !== 200) {
+        if (result.status !== 200 ||  result.data.status === 50) {
           logger.error(`Failed to fetch task result.`);
-          return {status: 'FAILURE', failReason: '任务失败'};
+          return {status: 'FAILURE', failReason: '任务失败。'};
         }
         if (config.printProgress) {
           logger.info(`Task ID: ${taskId} | Status: ${result.data.status}`);
         }
-        if (result.data.status === 99 || result.data.status === 50) {
+        if (result.data.status === 99) {
           return result;
         }
         await new Promise(resolve => setTimeout(resolve, 5000));
