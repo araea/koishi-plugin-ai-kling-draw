@@ -4,7 +4,8 @@
 
 ## ✨ 简介
 
-快手[可灵AI](https://klingai.kuaishou.com/text-to-image/new)绘图模型，原生支持生成准确的图内汉字，每日登录大约能免费画 330 张。自带提示词生成器、垫图等功能。🎨
+快手[可灵AI](https://klingai.kuaishou.com/text-to-image/new)绘图模型，原生支持生成准确的图内汉字，每日登录大约能免费画 330
+张。自带提示词生成器、垫图等功能。🎨
 
 ## 🎉 安装
 
@@ -40,7 +41,7 @@ cookie: 'YOUR_COOKIE' // 替换为你的 AI Kling Draw Cookie
   ```
   aiKling.提示词生成器 一只猫
   ```
-  - 由 `Claude-3.5-Sonnet` 提供支持。
+  - 由 `智谱AI GLM-4-AirX` 提供支持。
 
 - 使用 `aiKling.参数列表` 命令，查看可灵AI支持的参数列表。
 
@@ -64,10 +65,10 @@ cookie: 'YOUR_COOKIE' // 替换为你的 AI Kling Draw Cookie
 | `aiKling.参数列表`        | 查看 可灵AI 参数列表。    |
 
 ## 🌸 可灵AI绘图一览
+
 ![image](https://github.com/user-attachments/assets/84249060-f98f-4b4b-8769-981ff3b0af5a)
 ![image](https://github.com/user-attachments/assets/8e32ec9e-33cb-4d00-b107-b1670c8f0b8a)
 ![image](https://github.com/user-attachments/assets/bbf23f08-4733-40ef-905c-e7fee3307ede)
-
 
 ## 🍧 致谢
 

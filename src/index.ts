@@ -31,7 +31,7 @@ cookie: 'YOUR_COOKIE' // 替换为你的 可灵AI Cookie
   \`\`\`
   aiKling.提示词生成器 一只猫
   \`\`\`
-  - 由 \`Claude-3.5-Sonnet\` 提供支持。
+  - 由 \`智谱AI GLM-4-AirX\` 提供支持。
 
 - 使用 \`aiKling.参数列表\` 命令，查看可灵AI支持的参数列表。
 
@@ -253,22 +253,22 @@ output: `
         }
         await sendMessage(session, `已提交绘图任务，请耐心等待。`);
         const result = await pollTaskResult(taskId);
-        if (result.data.status === 99) {
+        if (result.status === 99) {
           if (config.printProgress) {
-            logger.success(`Task ID: ${taskId} | Image URL: ${result.data.works[0].resource.resource}`);
+            logger.success(`Task ID: ${taskId} | Image URL: ${result.works[0].resource.resource}`);
           }
           try {
-            const messageId = await sendMessage(session, `${h.image(result.data.works[0].resource.resource)}`);
+            const messageId = await sendMessage(session, `${h.image(result.works[0].resource.resource)}`);
             if (!messageId) {
               await sendMessage(session, `图片发送失败。
 图片链接如下：
-${result.data.works[0].resource.resource}`);
+${result.works[0].resource.resource}`);
             }
           } catch (error) {
             logger.error(error);
             await sendMessage(session, `图片发送失败。
 图片链接如下：
-${result.data.works[0].resource.resource}`);
+${result.works[0].resource.resource}`);
           }
 
           return
@@ -330,62 +330,30 @@ ${result.data.works[0].resource.resource}`);
   async function fetchCompletions(text) {
     const json = {
       "temperature": 1,
-      "topK": 50,
-      "topP": 0.9,
-      "model": "anthropic/claude-3-5-sonnet-20240620",
-      "maxTokensToSample": 4000,
+      "model": "glm-4-airx",
+      "max_tokens": 4095,
+      "stream": false,
       "messages": [
-        {
-          "text": text,
-          "speaker": "human"
-        }
+        {"role": "user", "content": text},
       ]
     };
 
     try {
-      const response = await fetch("https://sourcegraph.com/.api/completions/stream?api-version=1&client-name=web&client-version=0.0.1", {
+      const response = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'text/event-stream',
-          "x-requested-with": "Sourcegraph",
-          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0",
-          "x-sourcegraph-client": "https://sourcegraph.com",
-          "content-type": "application/json; charset=utf-8",
-          "origin": "https://sourcegraph.com",
-          "sec-fetch-site": "same-origin",
-          "sec-fetch-mode": "cors",
-          "sec-fetch-dest": "empty",
-          "accept-encoding": "gzip, deflate, br, zstd",
-          "accept-language": "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
-          "priority": "u=1, i",
-          "cookie": "sourcegraphAnonymousUid=8bb096cb-663b-4643-929a-2b01c36c9e9e; sourcegraphCohortId=2024-07-29; sourcegraphDeviceId=8bb096cb-663b-4643-929a-2b01c36c9e9e; CookieConsent={stamp:%27-1%27%2Cnecessary:true%2Cpreferences:true%2Cstatistics:true%2Cmarketing:true%2Cmethod:%27implied%27%2Cver:1%2Cutc:1722344152237%2Cregion:%27JP%27}; cody.survey.show=true; sourcegraphInsertId=2119af0c-e1d0-4191-852c-2300b7e9438b; sourcegraphSourceUrl=https://docs-legacy.sourcegraph.com/@v4.4.2/api; sourcegraphRecentSourceUrl=https://docs-legacy.sourcegraph.com/@v4.4.2/api; originalReferrer=https://www.bing.com/; ph_phc_GYC9gnJzJhbUMe7qIZPjMpTwAeF4kkC7AGAOXZgJ4pB_posthog=%7B%22distinct_id%22%3A%22019103b6-1a61-702d-99a9-084eb6be6a65%22%2C%22%24sesid%22%3A%5B1722770606869%2C%2201911d21-0714-7417-9e16-2ed61963ffd2%22%2C1722770589460%5D%7D; _cfuvid=DO8PwNqEjNqfHqG9hu1iooaxAhyYO.La3sYRuohrC7w-1723351350332-0.0.1.1-604800000; __cf_bm=2xEZUAPJz4QCrfqustoi36YIhKsYU9k4GErxe_Igqq8-1723354962-1.0.1.1-_bY5sHCATFyj__MskgujuH.CN3b8KGnLWwaSNsM89vSagXstZBBAgln5y2y6RuxfHVb0McWqlDURywjz8O_nbg; sgs=MTcyMzM1NTI2M3xOd3dBTkU5VFYxWk5SRk5JUjFCUE4wdENWMFJOVUVoRk5rUkpXa2RSTjBaU1RGUlVVREpXUzFSRU1rVk9RMEpTUlVNMVYxUklOMUU9fN9phG_JqwR7yw8m1kuiE_1dmZkNnmGSxLZvtgBCWvu7"
-
+          'Authorization': 'Bearer 6cb933cef62c71921abae1d511184c3d.w2OraEpWLytNG1J1'
         },
         body: JSON.stringify(json)
       });
-
-      const reader = response.body.getReader();
-
-      while (true) {
-        const {done, value} = await reader.read();
-        if (done) break;
-
-        const chunk = new TextDecoder().decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data:') && line.includes('end_turn')) {
-            const data = JSON.parse(line.slice(5));
-            return data.completion;
-          }
-        }
-      }
+      const result = await response.json();
+      return result.choices[0].message.content;
     } catch (error) {
       logger.error('Error:', error);
       return JSON.stringify({
-        english_translation: 'Translation failed.',
-        imaginePromptResult: 'Prompt generation failed.',
+        englishTranslation: 'Translation failed.',
+        finalPrompt: 'Prompt generation failed.',
       });
     }
   }
@@ -420,7 +388,8 @@ ${result.data.works[0].resource.resource}`);
     });
 
     if (!response.ok) {
-      logger.error(`HTTP error! status: ${response.status}`);
+      logger.error(`身份验证失败，请重新获取 Cookie。`);
+      return '';
     }
 
     return await response.json();
@@ -437,6 +406,9 @@ ${result.data.works[0].resource.resource}`);
         }
 
         const result = await fetchTaskResult(taskId);
+        if (!result || !result.data) {
+          return {status: 'FAILURE', message: '身份验证失败，请重新获取 Cookie。'};
+        }
         if (result.status !== 200 || result.data.status === 50) {
           logger.error(`Failed to fetch task result.`);
           return {status: 'FAILURE', message: '任务失败。'};
@@ -445,7 +417,7 @@ ${result.data.works[0].resource.resource}`);
           logger.info(`Task ID: ${taskId} | Status: ${result.data.status}`);
         }
         if (result.data.status === 99) {
-          return result;
+          return result.data;
         }
         await new Promise(resolve => setTimeout(resolve, 5000));
       } catch (error) {
@@ -454,6 +426,7 @@ ${result.data.works[0].resource.resource}`);
           return {status: 'FAILURE', message: '任务超时。'};
         }
         logger.error('Error fetching task result:', error);
+        return {status: 'FAILURE', message: '任务失败。'};
       }
     }
   }
