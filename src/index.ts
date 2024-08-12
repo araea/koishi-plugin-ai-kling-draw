@@ -31,7 +31,7 @@ cookie: 'YOUR_COOKIE' // 替换为你的 可灵AI Cookie
   \`\`\`
   aiKling.提示词生成器 一只猫
   \`\`\`
-  - 由 \`智谱AI GLM-4-AirX\` 提供支持。
+  - 由 \`智谱AI\` 提供支持。
 
 - 使用 \`aiKling.参数列表\` 命令，查看可灵AI支持的参数列表。
 
@@ -330,7 +330,7 @@ ${result.works[0].resource.resource}`);
   async function fetchCompletions(text) {
     const json = {
       "temperature": 1,
-      "model": "glm-4-airx",
+      "model": "glm-4-flash",
       "max_tokens": 4095,
       "stream": false,
       "messages": [

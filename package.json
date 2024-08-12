@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-ai-kling-draw",
   "description": "快手[可灵AI](https://klingai.kuaishou.com/text-to-image/new)绘图模型，原生支持生成准确的图内汉字，每日登录大约能免费画 330 张。自带提示词生成器、垫图等功能。🎨",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [

@@ -41,7 +41,7 @@ cookie: 'YOUR_COOKIE' // 替换为你的 AI Kling Draw Cookie
   ```
   aiKling.提示词生成器 一只猫
   ```
-  - 由 `智谱AI GLM-4-AirX` 提供支持。
+  - 由 `智谱AI` 提供支持。
 
 - 使用 `aiKling.参数列表` 命令，查看可灵AI支持的参数列表。
 
