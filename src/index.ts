@@ -96,6 +96,9 @@ export function apply(ctx: Context, config: Config) {
   // sctsc* sc*
   ctx.command('aiKling.提示词生成器 <prompt:text>', '生成中文提示词')
     .action(async ({session}, prompt) => {
+      if (!prompt && session.event.message.quote && session.event.message.quote.content) {
+        prompt = session.event.message.quote.content
+      }
       if (!prompt) {
         await sendMessage(session, `缺少提示词。`);
         return
