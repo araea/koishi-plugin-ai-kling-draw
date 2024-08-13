@@ -103,7 +103,7 @@ export function apply(ctx: Context, config: Config) {
         await sendMessage(session, `缺少提示词。`);
         return
       }
-   const promptSendToAI = `You are an AI assistant specialized in generating AI art prompts in Chinese. Your task is to create a detailed and creative prompt for AI image generation based on a given description. Think through this process step by step, and format your output strictly as JSON.
+      const promptSendToAI = `You are an AI assistant specialized in generating AI art prompts in Chinese. Your task is to create a detailed and creative prompt for AI image generation based on a given description. Think through this process step by step, and format your output strictly as JSON.
 
 Follow these steps:
 1. Analyze the user's description, extracting key words and core concepts.
@@ -513,7 +513,12 @@ ${result.works[0].resource.resource}`);
       return '';
     }
 
-    return data.data.task.id;
+    if (data.data.task?.id) {
+      return data.data.task?.id;
+    } else {
+      logger.error(`Failed to get task ID.`);
+      return '';
+    }
   }
 
   async function getImageBase64(imageUrl: string): Promise<string> {
