@@ -7,15 +7,22 @@ export const usage = `## 🌈 使用
 
 1. **获取 Cookie：**
 
-- 前往 [AI Kling Draw](https://klingai.kuaishou.com/text-to-image/new) 网站登录。
+- 前往 [AI Kling Draw](https://klingai.com/text-to-image/new)
+  或 [可灵AI](https://klingai.kuaishou.com/text-to-image/new) 网站登录。
+  - 前者为国际版，后者为国内版。
+  - 国际版的 Cookie 无法在国内版使用，反之亦然。
+  - 国际版违禁词较少，且国际版的提示词最大长度为 2500，国内版为 500。
 - 登录后，F12 打开控制台，切换到 "Network" (网络) 选项卡。
 - 输入提示词生成一次图片，找到 \`submit\` 请求。
 - 在请求标头 (Request Headers) 中，复制 \`Cookie\` 的值。
 
-2. **配置插件：** 填写 \`cookie\` 配置项。
+2. **配置插件：** 选择请求 url 并填写 \`cookie\` 配置项。
+
+- https://klingai.com （国际版）
+- https://klingai.kuaishou.com （国内版）
 
 \`\`\`typescript
-cookie: 'YOUR_COOKIE' // 替换为你的 可灵AI Cookie
+cookie: 'YOUR_COOKIE' // 替换为你的 AI Kling Draw Cookie
 \`\`\`
 
 3. **开始创作！**
@@ -37,14 +44,6 @@ cookie: 'YOUR_COOKIE' // 替换为你的 可灵AI Cookie
 
 - **建议自行添加别名：** 可以将 \`aiKling.绘图\` 添加别名为 \`绘图\` 或 \`画图\`，以便更方便地使用。
 
-## ⚙️ 配置项
-
-| 配置项               | 默认值  | 说明                             |
-|-------------------|------|--------------------------------|
-| \`cookie\`          | 必填   | 可灵AI 的 cookie，用于身份验证。 |
-| \`timeoutDuration\` | 10   | 任务超时时长 (分钟)，超过该时间任务将被视为失败。     |
-| \`printProgress\`   | true | 是否打印任务进度，方便你了解绘图的进展。           |
-
 ## 🌼 命令
 
 | 命令                    | 说明               |
@@ -60,16 +59,18 @@ cookie: 'YOUR_COOKIE' // 替换为你的 可灵AI Cookie
 
 // pz*
 export interface Config {
+  url: string
   cookie: string
   timeoutDuration: number
   printProgress: boolean
 }
 
 export const Config: Schema<Config> = Schema.object({
-  cookie: Schema.string().required().description('[可灵AI](https://klingai.kuaishou.com/text-to-image/new) 的 cookie。'),
+  url: Schema.union(['https://klingai.com', 'https://klingai.kuaishou.com']).default('https://klingai.kuaishou.com').description('可灵AI 的 API 请求地址。'),
+  cookie: Schema.string().required().description('可灵AI 的 cookie。'),
   timeoutDuration: Schema.number().default(10).description('任务超时时长（分钟）。'),
   printProgress: Schema.boolean().default(true).description('是否打印任务进度。'),
-})
+}) as any
 
 // jk*
 interface ParsedOutput {
@@ -177,7 +178,12 @@ output: `
 
       const options = parsePrompt(prompt);
       prompt = options.prompt;
-      if (prompt.length > 500) {
+      if (config.url === 'https://klingai.com' && prompt.length > 2500) {
+        await sendMessage(session, `提示词过长。
+提示词最多 2500 字符。
+当前提示词长度：${prompt.length} 字符。`);
+        return
+      } else if (config.url === 'https://klingai.kuaishou.com' && prompt.length > 500) {
         await sendMessage(session, `提示词过长。
 提示词最多 500 字符。
 当前提示词长度：${prompt.length} 字符。`);
@@ -248,7 +254,8 @@ output: `
       try {
         const taskId = await submitTask('submit', json);
         if (!taskId) {
-          await sendMessage(session, `提交绘图任务失败。`);
+          await sendMessage(session, `提交绘图任务失败。
+请检查输入的提示词是否包含敏感词。`);
           return
         }
         if (config.printProgress) {
@@ -379,7 +386,7 @@ ${result.works[0].resource.resource}`);
   }
 
   async function fetchTaskResult(taskId: string): Promise<any> {
-    const url = `https://klingai.kuaishou.com/api/task/status?taskId=${taskId}`;
+    const url = `${config.url}/api/task/status?taskId=${taskId}`;
     const headers = {
       "content-type": "application/json",
       "cookie": config.cookie
@@ -437,7 +444,7 @@ ${result.works[0].resource.resource}`);
   async function uploadImage(base64: string): Promise<string> {
     const filename = Math.random().toString(36).substring(7) + '.png';
 
-    const tokenResponse = await fetch(`https://klingai.kuaishou.com/api/upload/issue/token?filename=${filename}`, {
+    const tokenResponse = await fetch(`${config.url}/api/upload/issue/token?filename=${filename}`, {
       headers: {
         'Content-Type': 'application/json',
         'accept': 'application/json, text/plain, */*',
@@ -474,7 +481,7 @@ ${result.works[0].resource.resource}`);
       method: 'POST'
     });
 
-    const verifyResponse = await fetch(`https://klingai.kuaishou.com/api/upload/verify/token?token=${uploadToken}`, {
+    const verifyResponse = await fetch(`${config.url}/api/upload/verify/token?token=${uploadToken}`, {
       headers: {
         'Content-Type': 'application/json',
         'accept': 'application/json, text/plain, */*',
@@ -505,7 +512,7 @@ ${result.works[0].resource.resource}`);
       },
       body: JSON.stringify(requestBody)
     };
-    const response = await fetch(`https://klingai.kuaishou.com/api/task/${type}`, requestOptions);
+    const response = await fetch(`${config.url}/api/task/${type}`, requestOptions);
     const data = await response.json();
 
     if (data.status !== 200) {
