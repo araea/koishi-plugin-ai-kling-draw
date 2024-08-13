@@ -267,7 +267,7 @@ output: `
         const taskId = await submitTask('submit', json);
         if (!taskId) {
           await sendMessage(session, `提交绘图任务失败。
-请检查输入的提示词是否包含敏感词。`);
+请检查是否包含敏感内容。`);
           return
         }
         if (config.printProgress) {
