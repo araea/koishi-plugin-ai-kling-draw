@@ -4,7 +4,8 @@
 
 ## ✨ 简介
 
-快手[可灵AI](https://klingai.kuaishou.com/text-to-image/new)绘图模型，原生支持生成准确的图内汉字，每日登录大约能免费画 330 张。自带提示词生成器、垫图等功能。🎨
+快手[可灵AI](https://klingai.kuaishou.com/text-to-image/new)绘图模型，原生支持生成准确的图内汉字，每日登录大约能免费画 330
+张。自带提示词生成器、垫图等功能。🎨
 
 ## 🎉 安装
 
@@ -55,12 +56,14 @@ cookie: 'YOUR_COOKIE' // 替换为你的 AI Kling Draw Cookie
 
 ## ⚙️ 配置项
 
-| 配置项               | 默认值  | 说明                             |
-|-------------------|------|--------------------------------|
-| `url`             | 国内版  | AI Kling Draw 的请求地址。           |
-| `cookie`          | 必填   | AI Kling Draw 的 cookie，用于身份验证。 |
-| `timeoutDuration` | 10   | 任务超时时长 (分钟)，超过该时间任务将被视为失败。     |
-| `printProgress`   | true | 是否打印任务进度，方便你了解绘图的进展。           |
+| 配置项                  | 默认值  | 说明                             |
+|----------------------|------|--------------------------------|
+| `url`                | 国内版  | AI Kling Draw 的请求地址。           |
+| `cookie`             | 必填   | AI Kling Draw 的 cookie，用于身份验证。 |
+| `defaultImageWeight` | 1    | 默认图片权重，范围为 0 - 1。              |
+| `defaultAspectRatio` | 1    | 默认图片宽高比。                       |
+| `timeoutDuration`    | 10   | 任务超时时长 (分钟)，超过该时间任务将被视为失败。     |
+| `printProgress`      | true | 是否打印任务进度，方便你了解绘图的进展。           |
 
 ## 🌼 命令
 

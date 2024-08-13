@@ -61,6 +61,8 @@ cookie: 'YOUR_COOKIE' // 替换为你的 AI Kling Draw Cookie
 export interface Config {
   url: string
   cookie: string
+  defaultImageWeight: number
+  defaultAspectRatio: string
   timeoutDuration: number
   printProgress: boolean
 }
@@ -68,6 +70,16 @@ export interface Config {
 export const Config: Schema<Config> = Schema.object({
   url: Schema.union(['https://klingai.com', 'https://klingai.kuaishou.com']).default('https://klingai.kuaishou.com').description('可灵AI 的 API 请求地址。'),
   cookie: Schema.string().required().description('可灵AI 的 cookie。'),
+  defaultImageWeight: Schema.number().min(0).max(1).default(0.5).description('默认图片权重（垫图时生效）。'),
+  defaultAspectRatio: Schema.union([
+    '1:1',
+    '16:9',
+    '4:3',
+    '3:2',
+    '2:3',
+    '3:4',
+    '9:16',
+  ]).default('1:1').description('默认宽高比。'),
   timeoutDuration: Schema.number().default(10).description('任务超时时长（分钟）。'),
   printProgress: Schema.boolean().default(true).description('是否打印任务进度。'),
 }) as any
@@ -190,10 +202,10 @@ output: `
         return
       }
       if (!options.ar) {
-        options.ar = '1:1';
+        options.ar = config.defaultAspectRatio;
       }
       if (!options.iw) {
-        options.iw = '0.5';
+        options.iw = String(config.defaultImageWeight);
       }
       if (!isImageWeightValid(parseFloat(options.iw))) {
         await sendMessage(session, `图片权重不合法。
@@ -462,7 +474,7 @@ ${result.works[0].resource.resource}`);
     }
 
     const imageBytes = base64toBytesArray(base64);
-    const fragmentResponse = await fetch(`https://upload.kuaishouzt.com/api/upload/fragment?upload_token=${uploadToken}&fragment_id=0`, {
+    const fragmentResponse = await fetch(`https://upload.${config.url === 'https://klingai.kuaishou.com' ? 'kuaishouzt' : 'uvfuns'}.com/api/upload/fragment?upload_token=${uploadToken}&fragment_id=0`, {
       headers: {
         'Content-Type': 'application/octet-stream',
         'content-range': `bytes 0-${imageBytes.length - 1}/${imageBytes.length}`,
@@ -474,7 +486,7 @@ ${result.works[0].resource.resource}`);
 
     await fragmentResponse.json();
 
-    await fetch(`https://upload.kuaishouzt.com/api/upload/complete?fragment_count=1&upload_token=${uploadToken}`, {
+    await fetch(`https://upload.${config.url === 'https://klingai.kuaishou.com' ? 'kuaishouzt' : 'uvfuns'}.com/api/upload/complete?fragment_count=1&upload_token=${uploadToken}`, {
       headers: {
         'accept': 'application/json, text/plain, */*',
       },
