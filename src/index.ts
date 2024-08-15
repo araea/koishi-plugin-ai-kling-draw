@@ -256,9 +256,14 @@ output: `
           "name": "fidelity",
           "value": options.iw
         },)
+        const url = await uploadImage(base64);
+        if (!url) {
+          await sendMessage(session, `垫图失败。`);
+          return
+        }
         json.inputs.push({
           "inputType": "URL",
-          "url": await uploadImage(base64),
+          "url": url,
           "name": "input"
         })
       }
@@ -468,6 +473,26 @@ ${result.works[0].resource.resource}`);
     const tokenData = await tokenResponse.json();
     const uploadToken = tokenData.data.token;
 
+    await fetch(`https://upload.${config.url === 'https://klingai.kuaishou.com' ? 'kuaishouzt' : 'uvfuns'}.com/api/upload/resume?upload_token=${uploadToken}`, {
+      "headers": {
+        'Content-Type': 'application/json',
+        "accept": "application/json, text/plain, */*",
+      },
+      "body": null,
+      "method": "GET"
+    });
+
+    await fetch(`https://upload.${config.url === 'https://klingai.kuaishou.com' ? 'kuaishouzt' : 'uvfuns'}.com/api/upload/fragment?upload_token=${uploadToken}C&fragment_id=0`, {
+      "headers": {
+        'Content-Type': 'application/json',
+        "accept": "*/*",
+        "access-control-request-method": "POST",
+        "access-control-request-headers": "content-range,content-type",
+      },
+      "body": null,
+      "method": "OPTIONS"
+    });
+
     function base64toBytesArray(base64: string): Uint8Array {
       const binaryString = Buffer.from(base64, 'base64').toString('binary');
       return Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
@@ -477,7 +502,6 @@ ${result.works[0].resource.resource}`);
     const fragmentResponse = await fetch(`https://upload.${config.url === 'https://klingai.kuaishou.com' ? 'kuaishouzt' : 'uvfuns'}.com/api/upload/fragment?upload_token=${uploadToken}&fragment_id=0`, {
       headers: {
         'Content-Type': 'application/octet-stream',
-        'content-range': `bytes 0-${imageBytes.length - 1}/${imageBytes.length}`,
         'accept': 'application/json, text/plain, */*',
       },
       body: imageBytes,
@@ -503,7 +527,12 @@ ${result.works[0].resource.resource}`);
     });
 
     const verifyData = await verifyResponse.json();
-    return verifyData.data.url;
+    if (verifyData.data?.url) {
+      return verifyData.data.url;
+    } else {
+      logger.error(`Failed to verify image upload.`);
+      return '';
+    }
   }
 
   function isImageWeightValid(imageWeight: number): boolean {
