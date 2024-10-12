@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-ai-kling-draw",
-  "description": "Koishi 的 [KlingAI](https://klingai.kuaishou.com/text-to-image/new) 绘图插件。每日免费绘图 330 张。",
-  "version": "1.0.9",
+  "description": "Koishi 的 KlingAI 绘图插件。每日免费绘图 330 张。",
+  "version": "1.1.0",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
   "files": [
